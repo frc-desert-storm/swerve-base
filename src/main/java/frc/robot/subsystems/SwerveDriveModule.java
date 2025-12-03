@@ -4,14 +4,15 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.units.Units;
 
 import static edu.wpi.first.units.Units.Radian;
+import static frc.robot.subsystems.SwerveDriveConstants.kCanBus;
 
 public class SwerveDriveModule {
-    private final String name;
     private final double driveGearRatio;
     private final double steerGearRatio;
     private final double wheelDiameterMeters;
@@ -21,41 +22,16 @@ public class SwerveDriveModule {
 
     private final CANcoder m_steerEncoder;
 
-    private static final double kTurnP = .2;
+    private final PIDController pid = new PIDController(.3, 0, 0);
 
-    public SwerveDriveModule(String name, double driveGearRatio, double steerGearRatio, double wheelDiameterMeters) {
-        this.name = name;
+    public SwerveDriveModule(SwerveDriveConstants.SwerveModuleConstants constants, double driveGearRatio, double steerGearRatio, double wheelDiameterMeters) {
         this.driveGearRatio = driveGearRatio;
         this.steerGearRatio = steerGearRatio;
         this.wheelDiameterMeters = wheelDiameterMeters;
 
-        switch (name){
-            case "Front Left":
-                m_driveMotor = new TalonFX(11, "bob");
-                m_steerMotor = new TalonFX(12, "bob");
-                m_steerEncoder = new CANcoder(13, "bob");
-                break;
-            case "Front Right":
-                m_driveMotor = new TalonFX(14, "bob");
-                m_steerMotor = new TalonFX(15, "bob");
-                m_steerEncoder = new CANcoder(16, "bob");
-                break;
-            case "Back Left":
-                m_driveMotor = new TalonFX(18, "bob");
-                m_steerMotor = new TalonFX(17, "bob");
-                m_steerEncoder = new CANcoder(19, "bob");
-                break;
-            case "Back Right":
-                m_driveMotor = new TalonFX(21, "bob");
-                m_steerMotor = new TalonFX(20, "bob");
-                m_steerEncoder = new CANcoder(22, "bob");
-                break;
-            default:
-                m_driveMotor = new TalonFX(0);
-                m_steerMotor = new TalonFX(0);
-                m_steerEncoder = new CANcoder(0);
-                break;
-        }
+        m_driveMotor = new TalonFX(constants.DriveCanId, kCanBus);
+        m_steerMotor = new TalonFX(constants.SteeringCanId, kCanBus);
+        m_steerEncoder = new CANcoder(constants.EncoderCanId, kCanBus);
     }
 
     public Rotation2d getCurrentAngle(){
@@ -74,23 +50,8 @@ public class SwerveDriveModule {
 
         double driveOutput = optimized.speedMetersPerSecond / SwerveDriveConstants.kMaxSpeedMetersPerSecond;
 
-        if(Math.abs(driveOutput) > 0.05){
-            driveOutput = MathUtil.clamp(driveOutput, -1.0, 1.0);
-        }else {
-            driveOutput = 0.0;
-        }
-
         m_driveMotor.set(driveOutput);
-
-        double angleError = optimized.angle.minus(currentAngle).getRadians();
-        double turnOutput = kTurnP * angleError;
-
-        if(Math.abs(turnOutput) > 0.05){
-            turnOutput = MathUtil.clamp(turnOutput, -1.0, 1.0);
-        }else {
-            turnOutput = 0.0;
-        }
-
-        m_steerMotor.set(turnOutput);
+        
+        m_steerMotor.set(pid.calculate(m_steerEncoder.getAbsolutePosition().getValue().in(Radian),optimized.angle.getRadians()));
     }
 }

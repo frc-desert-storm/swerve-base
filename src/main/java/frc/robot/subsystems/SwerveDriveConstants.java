@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.CANBus;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -39,4 +41,44 @@ public class SwerveDriveConstants {
 
     public static final double kMaxAngularSpeedRadiansPerSecond =
             kMaxSpeedMetersPerSecond / Math.hypot(kWheelBase/2, kTrackWidth/2);
+
+    public static final CANBus kCanBus = new CANBus("bob");
+
+    public static enum SwerveModuleConstants {
+        FrontLeft(11,12,13),
+        FrontRight(14,15,16),
+        BackLeft(18,17,19),
+        BackRight(21,20,22);
+
+        public final int DriveCanId;
+        public final int SteeringCanId;
+        public final int EncoderCanId;
+
+        SwerveModuleConstants(int DriveCanId, int SteeringCanId, int EncoderCanId){
+            this.DriveCanId = DriveCanId;
+            this.SteeringCanId = SteeringCanId;
+            this.EncoderCanId = EncoderCanId;
+        }
+    }
 }
+/*            case "Front Left":
+                m_driveMotor = new TalonFX(11, "bob");
+                m_steerMotor = new TalonFX(12, "bob");
+                m_steerEncoder = new CANcoder(13, "bob");
+                break;
+            case "Front Right":
+                m_driveMotor = new TalonFX(14, "bob");
+                m_steerMotor = new TalonFX(15, "bob");
+                m_steerEncoder = new CANcoder(16, "bob");
+                break;
+            case "Back Left":
+                m_driveMotor = new TalonFX(18, "bob");
+                m_steerMotor = new TalonFX(17, "bob");
+                m_steerEncoder = new CANcoder(19, "bob");
+                break;
+            case "Back Right":
+                m_driveMotor = new TalonFX(21, "bob");
+                m_steerMotor = new TalonFX(20, "bob");
+                m_steerEncoder = new CANcoder(22, "bob");
+                break;
+ */

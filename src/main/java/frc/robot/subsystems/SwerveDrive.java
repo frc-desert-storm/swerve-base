@@ -1,51 +1,56 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.hardware.Pigeon2;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class SwerveDrive extends SubsystemBase {
 
     private final SwerveDriveKinematics m_swerveDriveKinematics = SwerveDriveConstants.kDriveKinematics;
 
+    private final Pigeon2 pigeon = new Pigeon2(10,SwerveDriveConstants.kCanBus);
+
     private final SwerveDriveModule m_frontLeft = new SwerveDriveModule(
-            "Front Left",
+            SwerveDriveConstants.SwerveModuleConstants.FrontLeft,
             SwerveDriveConstants.kDriveGearRatio,
             SwerveDriveConstants.kSteerGearRatio,
             SwerveDriveConstants.kWheelDiameterMeters
     );
 
     private final SwerveDriveModule m_frontRight = new SwerveDriveModule(
-            "Front Right",
+            SwerveDriveConstants.SwerveModuleConstants.FrontRight,
             SwerveDriveConstants.kDriveGearRatio,
             SwerveDriveConstants.kSteerGearRatio,
             SwerveDriveConstants.kWheelDiameterMeters
     );
 
     private final SwerveDriveModule m_backLeft = new SwerveDriveModule(
-            "Back Left",
+            SwerveDriveConstants.SwerveModuleConstants.BackLeft,
             SwerveDriveConstants.kDriveGearRatio,
             SwerveDriveConstants.kSteerGearRatio,
             SwerveDriveConstants.kWheelDiameterMeters
     );
 
     private final SwerveDriveModule m_backRight = new SwerveDriveModule(
-            "Back Right",
+            SwerveDriveConstants.SwerveModuleConstants.BackRight,
             SwerveDriveConstants.kDriveGearRatio,
             SwerveDriveConstants.kSteerGearRatio,
             SwerveDriveConstants.kWheelDiameterMeters
     );
 
-    public void drive(double forward, double strafe, double rotation) {
+    public void drive(double forward, double strafe, double rotation, Boolean fieldRelative) {
 
         double forwardMetersPerSecond = forward * SwerveDriveConstants.kMaxSpeedMetersPerSecond;
         double strafeMetersPerSecond = strafe * SwerveDriveConstants.kMaxSpeedMetersPerSecond;
         double rotationsRadiansPerSecond = rotation * SwerveDriveConstants.kMaxAngularSpeedRadiansPerSecond;
-
+        
         ChassisSpeeds chassisSpeeds = new ChassisSpeeds(forwardMetersPerSecond, strafeMetersPerSecond, rotationsRadiansPerSecond);
-
+        if(fieldRelative) chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, pigeon.getRotation2d());
         // Convert to individual module states
         SwerveModuleState[] states = m_swerveDriveKinematics.toSwerveModuleStates(chassisSpeeds);
 
@@ -56,6 +61,8 @@ public class SwerveDrive extends SubsystemBase {
         m_frontRight.setDesiredState(states[1]);
         m_backLeft.setDesiredState(states[2]);
         m_backRight.setDesiredState(states[3]);
+
+        pigeon.setYaw(0);
     }
 
     public void xStance(){

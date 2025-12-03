@@ -33,7 +33,7 @@ public class SwerveDriveCommand extends Command {
         double strafe = m_strafe.getAsDouble();
         double rotation = m_rotation.getAsDouble();
 
-        m_swerveDrive.drive(forward, strafe, rotation);
+        m_swerveDrive.drive(forward, strafe, rotation, true);
     }
 
     @Override

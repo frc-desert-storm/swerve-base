@@ -44,9 +44,9 @@ public class RobotContainer {
   private void configureBindings() {
     m_drivetrain.setDefaultCommand(new SwerveDriveCommand(
             m_drivetrain,
-            () -> MathUtil.applyDeadband(m_driverController.getLeftY(),0.1),
-            () -> MathUtil.applyDeadband(m_driverController.getLeftX(),0.1),
-            () -> MathUtil.applyDeadband(m_driverController.getRightX(),0.1)
+            () -> MathUtil.applyDeadband(m_driverController.getLeftY() * 0.5,0.1), //TODO REMOVE the * 0.5
+            () -> MathUtil.applyDeadband(m_driverController.getLeftX() * 0.5,0.1),
+            () -> MathUtil.applyDeadband(m_driverController.getRightX() * 0.5,0.1)
     ));
   m_driverController.x().onTrue(new SwerveXCommand(m_drivetrain));
   }
