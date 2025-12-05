@@ -26,6 +26,10 @@ public class SwerveModuleConfigBuilder {
         if (this.steerCanId == null) throw new IllegalStateException("steerCanId not set");
         if (this.encoderCanId == null) throw new IllegalStateException("encoderCanId not set");
 
-        return new SwerveModuleConfig(driveCanId, steerCanId, encoderCanId);
+        int drive = driveCanId.intValue();
+        int steer = steerCanId.intValue();
+        int encoder = encoderCanId.intValue();
+
+        return new SwerveModuleConfig(drive, steer, encoder);
     }
 }
