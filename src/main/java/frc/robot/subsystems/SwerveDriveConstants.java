@@ -44,6 +44,18 @@ public class SwerveDriveConstants {
 
     public static final CANBus kCanBus = new CANBus("bob");
 
+
+    // Builder Pattern for an example only
+    // to implement create SwerveModuleConfig for each
+    // module and add SwerveModuleConfig as the only parameter
+    // in SwerveDriveModule
+    public static final SwerveModuleConfig kFrontLeft =
+        SwerveModuleConfig.builder()
+            .steerMotor(12)
+            .driveMotor(11)
+            .encoder(13)
+            .build();
+
     public static enum SwerveModuleConstants {
         FrontLeft(11,12,13),
         FrontRight(14,15,16),
