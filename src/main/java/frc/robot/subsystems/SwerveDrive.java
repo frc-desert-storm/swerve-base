@@ -76,4 +76,14 @@ public class SwerveDrive extends SubsystemBase {
         m_backLeft.setDesiredState(backLeftState);
         m_backRight.setDesiredState(backRightState);
     }
+
+    public void zeroStance(){
+        SwerveModuleState zero = new SwerveModuleState(0.0, Rotation2d.fromDegrees(0));
+
+
+        m_frontLeft.setDesiredState(zero);
+        m_frontRight.setDesiredState(zero);
+        m_backLeft.setDesiredState(zero);
+        m_backRight.setDesiredState(zero);
+    }
 }
