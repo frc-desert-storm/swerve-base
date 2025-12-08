@@ -16,31 +16,19 @@ public class SwerveDrive extends SubsystemBase {
     private final Pigeon2 pigeon = new Pigeon2(10,SwerveDriveConstants.kCanBus);
 
     private final SwerveDriveModule m_frontLeft = new SwerveDriveModule(
-            SwerveDriveConstants.SwerveModuleConstants.FrontLeft,
-            SwerveDriveConstants.kDriveGearRatio,
-            SwerveDriveConstants.kSteerGearRatio,
-            SwerveDriveConstants.kWheelDiameterMeters
+            SwerveDriveConstants.SwerveModuleConstants.FrontLeft
     );
 
     private final SwerveDriveModule m_frontRight = new SwerveDriveModule(
-            SwerveDriveConstants.SwerveModuleConstants.FrontRight,
-            SwerveDriveConstants.kDriveGearRatio,
-            SwerveDriveConstants.kSteerGearRatio,
-            SwerveDriveConstants.kWheelDiameterMeters
+            SwerveDriveConstants.SwerveModuleConstants.FrontRight
     );
 
     private final SwerveDriveModule m_backLeft = new SwerveDriveModule(
-            SwerveDriveConstants.SwerveModuleConstants.BackLeft,
-            SwerveDriveConstants.kDriveGearRatio,
-            SwerveDriveConstants.kSteerGearRatio,
-            SwerveDriveConstants.kWheelDiameterMeters
+            SwerveDriveConstants.SwerveModuleConstants.BackLeft
     );
 
     private final SwerveDriveModule m_backRight = new SwerveDriveModule(
-            SwerveDriveConstants.SwerveModuleConstants.BackRight,
-            SwerveDriveConstants.kDriveGearRatio,
-            SwerveDriveConstants.kSteerGearRatio,
-            SwerveDriveConstants.kWheelDiameterMeters
+            SwerveDriveConstants.SwerveModuleConstants.BackRight
     );
 
     public void drive(double forward, double strafe, double rotation, Boolean fieldRelative) {
