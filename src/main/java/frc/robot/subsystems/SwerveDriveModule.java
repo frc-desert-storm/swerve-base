@@ -36,7 +36,7 @@ public class SwerveDriveModule {
     }
     
     public SwerveModuleState getState(){
-        double speedMetersPerSecond = (m_driveMotor.getVelocity().getValue().in(Units.RPM) / 60.0)
+        double speedMetersPerSecond = m_driveMotor.getVelocity().getValue().in(Units.RotationsPerSecond)
                 * SwerveDriveConstants.kWheelCircumferenceMeters
                 * SwerveDriveConstants.kDriveGearRatio;
 
