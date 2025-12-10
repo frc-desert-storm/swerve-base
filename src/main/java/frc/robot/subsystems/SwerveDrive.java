@@ -2,11 +2,11 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.math.kinematics.*;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class SwerveDrive extends SubsystemBase {
@@ -31,8 +31,18 @@ public class SwerveDrive extends SubsystemBase {
             SwerveDriveConstants.SwerveModuleConstants.BackRight
     );
 
-    public void drive(double forward, double strafe, double rotation, Boolean fieldRelative) {
+    private final SwerveDrivePoseEstimator m_odometry = new SwerveDrivePoseEstimator(
+        m_swerveDriveKinematics, pigeon.getRotation2d(),
+        new SwerveModulePosition[] {
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_backLeft.getPosition(),
+            m_backRight.getPosition()
+        }, new Pose2d(0, 0, new Rotation2d()));
+  
+    public Pose2d m_pose = new Pose2d();
 
+    public void drive(double forward, double strafe, double rotation, Boolean fieldRelative) {
         double forwardMetersPerSecond = forward * SwerveDriveConstants.kMaxSpeedMetersPerSecond;
         double strafeMetersPerSecond = strafe * SwerveDriveConstants.kMaxSpeedMetersPerSecond;
         double rotationsRadiansPerSecond = rotation * SwerveDriveConstants.kMaxAngularSpeedRadiansPerSecond;
@@ -50,7 +60,20 @@ public class SwerveDrive extends SubsystemBase {
         m_backLeft.setDesiredState(states[2]);
         m_backRight.setDesiredState(states[3]);
     }
-
+    
+    @Override
+    public void periodic() {
+        m_pose = m_odometry.update(
+            pigeon.getRotation2d(),
+            new SwerveModulePosition[] {
+                m_frontLeft.getPosition(),
+                m_frontRight.getPosition(),
+                m_backLeft.getPosition(),
+                m_backRight.getPosition()
+            }
+        );
+    }
+    
     public void xStance(){
         SwerveModuleState frontLeftState = new SwerveModuleState(0.0, Rotation2d.fromDegrees(0));
         SwerveModuleState frontRightState = new SwerveModuleState(0.0, Rotation2d.fromDegrees(0));

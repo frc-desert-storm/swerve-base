@@ -7,6 +7,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.units.Units;
 
@@ -43,6 +44,16 @@ public class SwerveDriveModule {
         Rotation2d angle = getCurrentAngle();
 
         return new SwerveModuleState(speedMetersPerSecond, angle);
+    }
+    
+    public SwerveModulePosition getPosition(){
+        double distanceMeters = m_driveMotor.getPosition().getValue().in(Units.Rotations)
+                * SwerveDriveConstants.kWheelCircumferenceMeters
+                * SwerveDriveConstants.kDriveGearRatio;
+
+        Rotation2d angle = getCurrentAngle();
+
+        return new SwerveModulePosition(distanceMeters, angle);
     }
 
     public void setDesiredState(SwerveModuleState desiredState){
