@@ -74,6 +74,6 @@ public class SwerveDriveModule {
         double steerOutput = m_steerPid.calculate(currentState.angle.getRadians(), optimized.angle.getRadians())
                 + m_steerFeedforward.calculate(optimized.angle.getRadians());
         
-        m_steerMotor.set(m_steerPid.calculate(m_steerEncoder.getAbsolutePosition().getValue().in(Radian),optimized.angle.getRadians()));
+        m_steerMotor.set(steerOutput);
     }
 }
