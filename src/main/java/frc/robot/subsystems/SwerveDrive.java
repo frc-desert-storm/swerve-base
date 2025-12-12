@@ -66,10 +66,10 @@ public class SwerveDrive extends SubsystemBase {
     }
 
     public void xStance(){
-        SwerveModuleState frontLeftState = new SwerveModuleState(0.0, Rotation2d.fromDegrees(0));
-        SwerveModuleState frontRightState = new SwerveModuleState(0.0, Rotation2d.fromDegrees(0));
-        SwerveModuleState backLeftState = new SwerveModuleState(0.0, Rotation2d.fromDegrees(0));
-        SwerveModuleState backRightState = new SwerveModuleState(0.0, Rotation2d.fromDegrees(0));
+        SwerveModuleState frontLeftState = new SwerveModuleState(0.0, Rotation2d.fromDegrees(-45));
+        SwerveModuleState frontRightState = new SwerveModuleState(0.0, Rotation2d.fromDegrees(45));
+        SwerveModuleState backLeftState = new SwerveModuleState(0.0, Rotation2d.fromDegrees(45));
+        SwerveModuleState backRightState = new SwerveModuleState(0.0, Rotation2d.fromDegrees(-45));
 
         m_frontLeft.setDesiredState(frontLeftState);
         m_frontRight.setDesiredState(frontRightState);
