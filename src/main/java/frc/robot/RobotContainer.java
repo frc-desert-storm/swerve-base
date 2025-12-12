@@ -50,7 +50,7 @@ public class RobotContainer {
             () -> MathUtil.applyDeadband(m_driverController.getRightX() * 0.5,0.1)
     ));
   m_driverController.x().onTrue(new SwerveXCommand(m_drivetrain));
-  m_driverController.y().onTrue(new SwerveZeroCommand(m_drivetrain));
+  m_driverController.b().onTrue(new SwerveZeroCommand(m_drivetrain));
   }
 
 
