@@ -13,9 +13,7 @@ import static edu.wpi.first.units.Units.Radian;
 import static frc.robot.subsystems.SwerveDriveConstants.kCanBus;
 
 public class SwerveDriveModule {
-    private final double driveGearRatio;
-    private final double steerGearRatio;
-    private final double wheelDiameterMeters;
+
 
     private final TalonFX m_driveMotor;
     private final TalonFX m_steerMotor;
@@ -25,9 +23,7 @@ public class SwerveDriveModule {
     private final PIDController pid = new PIDController(.3, 0, 0);
 
     public SwerveDriveModule(SwerveDriveConstants.SwerveModuleConstants constants, double driveGearRatio, double steerGearRatio, double wheelDiameterMeters) {
-        this.driveGearRatio = driveGearRatio;
-        this.steerGearRatio = steerGearRatio;
-        this.wheelDiameterMeters = wheelDiameterMeters;
+
 
         m_driveMotor = new TalonFX(constants.DriveCanId, kCanBus);
         m_steerMotor = new TalonFX(constants.SteeringCanId, kCanBus);
