@@ -8,6 +8,7 @@ import edu.wpi.first.math.MathUtil;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.SwerveDriveCommand;
 import frc.robot.commands.SwerveXCommand;
+import frc.robot.commands.SwerveZeroCommand;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -49,7 +50,9 @@ public class RobotContainer {
             () -> MathUtil.applyDeadband(m_driverController.getRightX() * 0.5,0.1)
     ));
   m_driverController.x().onTrue(new SwerveXCommand(m_drivetrain));
+  m_driverController.y().onTrue(new SwerveZeroCommand(m_drivetrain));
   }
+
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
