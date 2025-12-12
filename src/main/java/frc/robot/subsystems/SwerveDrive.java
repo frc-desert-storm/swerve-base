@@ -6,6 +6,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.*;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -41,6 +42,7 @@ public class SwerveDrive extends SubsystemBase {
         }, new Pose2d(0, 0, new Rotation2d()));
   
     public Pose2d m_pose = new Pose2d();
+    public Field2d m_field = new Field2d();
 
     public void drive(double forward, double strafe, double rotation, Boolean fieldRelative) {
         double forwardMetersPerSecond = forward * SwerveDriveConstants.kMaxSpeedMetersPerSecond;
@@ -72,6 +74,8 @@ public class SwerveDrive extends SubsystemBase {
                 m_backRight.getPosition()
             }
         );
+        m_field.setRobotPose(m_pose);
+        SmartDashboard.putData(m_field);
     }
     
     public void xStance(){
