@@ -24,7 +24,7 @@ public class SwerveDriveModule {
     private final PIDController m_steerPid = new PIDController(.3, 0, 0);
   
     private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0, 0, 0);
-    private final PIDController m_drivePid = new PIDController(.3, 0, 0);
+    private final PIDController m_drivePid = new PIDController(.05, 0, 0);
 
     public SwerveDriveModule(SwerveDriveConstants.SwerveModuleConstants constants) {
         m_driveMotor = new TalonFX(constants.DriveCanId, kCanBus);
@@ -39,7 +39,7 @@ public class SwerveDriveModule {
     public SwerveModuleState getState(){
         double speedMetersPerSecond = m_driveMotor.getVelocity().getValue().in(Units.RotationsPerSecond)
                 * SwerveDriveConstants.kWheelCircumferenceMeters
-                * SwerveDriveConstants.kDriveGearRatio;
+                / SwerveDriveConstants.kDriveGearRatio;
 
         Rotation2d angle = getCurrentAngle();
 
@@ -49,7 +49,7 @@ public class SwerveDriveModule {
     public SwerveModulePosition getPosition(){
         double distanceMeters = m_driveMotor.getPosition().getValue().in(Units.Rotations)
                 * SwerveDriveConstants.kWheelCircumferenceMeters
-                * SwerveDriveConstants.kDriveGearRatio;
+                / SwerveDriveConstants.kDriveGearRatio;
 
         Rotation2d angle = getCurrentAngle();
 
