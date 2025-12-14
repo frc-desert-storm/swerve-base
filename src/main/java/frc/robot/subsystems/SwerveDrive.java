@@ -44,6 +44,8 @@ public class SwerveDrive extends SubsystemBase {
     public Pose2d m_pose = new Pose2d();
     public Field2d m_field = new Field2d();
 
+    public Vision m_vision = new Vision();
+
     public void drive(double forward, double strafe, double rotation, Boolean fieldRelative) {
         double forwardMetersPerSecond = forward * SwerveDriveConstants.kMaxSpeedMetersPerSecond;
         double strafeMetersPerSecond = strafe * SwerveDriveConstants.kMaxSpeedMetersPerSecond;
@@ -74,6 +76,7 @@ public class SwerveDrive extends SubsystemBase {
                 m_backRight.getPosition()
             }
         );
+        m_odometry.addVisionMeasurement(m_vision.getRobotPose().toPose2d(),m_vision.getLatestTimestamp());
         m_field.setRobotPose(m_pose);
         SmartDashboard.putData(m_field);
     }
