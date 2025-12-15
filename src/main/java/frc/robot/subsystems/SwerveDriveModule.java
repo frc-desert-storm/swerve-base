@@ -5,7 +5,9 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.units.Units;
 
@@ -13,18 +15,18 @@ import static edu.wpi.first.units.Units.Radian;
 import static frc.robot.subsystems.SwerveDriveConstants.kCanBus;
 
 public class SwerveDriveModule {
-
-
     private final TalonFX m_driveMotor;
     private final TalonFX m_steerMotor;
 
     private final CANcoder m_steerEncoder;
 
-    private final PIDController pid = new PIDController(.3, 0, 0);
+    private final SimpleMotorFeedforward m_steerFeedforward = new SimpleMotorFeedforward(0, 0, 0);
+    private final PIDController m_steerPid = new PIDController(.3, 0, 0);
+  
+    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0, 0, 0);
+    private final PIDController m_drivePid = new PIDController(.05, 0, 0);
 
-    public SwerveDriveModule(SwerveDriveConstants.SwerveModuleConstants constants, double driveGearRatio, double steerGearRatio, double wheelDiameterMeters) {
-
-
+    public SwerveDriveModule(SwerveDriveConstants.SwerveModuleConstants constants) {
         m_driveMotor = new TalonFX(constants.DriveCanId, kCanBus);
         m_steerMotor = new TalonFX(constants.SteeringCanId, kCanBus);
         m_steerEncoder = new CANcoder(constants.EncoderCanId, kCanBus);
@@ -33,21 +35,45 @@ public class SwerveDriveModule {
     public Rotation2d getCurrentAngle(){
         return Rotation2d.fromRadians(m_steerEncoder.getAbsolutePosition().getValue().in(Radian));
     }
+    
+    public SwerveModuleState getState(){
+        double speedMetersPerSecond = m_driveMotor.getVelocity().getValue().in(Units.RotationsPerSecond)
+                * SwerveDriveConstants.kWheelCircumferenceMeters
+                / SwerveDriveConstants.kDriveGearRatio;
+
+        Rotation2d angle = getCurrentAngle();
+
+        return new SwerveModuleState(speedMetersPerSecond, angle);
+    }
+    
+    public SwerveModulePosition getPosition(){
+        double distanceMeters = m_driveMotor.getPosition().getValue().in(Units.Rotations)
+                * SwerveDriveConstants.kWheelCircumferenceMeters
+                / SwerveDriveConstants.kDriveGearRatio;
+
+        Rotation2d angle = getCurrentAngle();
+
+        return new SwerveModulePosition(distanceMeters, angle);
+    }
 
     public void setDesiredState(SwerveModuleState desiredState){
-        Rotation2d currentAngle = getCurrentAngle();
-
         SwerveModuleState optimized = new SwerveModuleState(
                 desiredState.speedMetersPerSecond,
                 desiredState.angle
         );
+        
+        SwerveModuleState currentState = getState();
 
-        optimized.optimize(currentAngle);
-
-        double driveOutput = optimized.speedMetersPerSecond / SwerveDriveConstants.kMaxSpeedMetersPerSecond;
+        optimized.optimize(currentState.angle);
+        
+        double driveOutput = m_drivePid.calculate(currentState.speedMetersPerSecond, optimized.speedMetersPerSecond)
+                + m_driveFeedforward.calculate(optimized.speedMetersPerSecond);
 
         m_driveMotor.set(driveOutput);
         
-        m_steerMotor.set(pid.calculate(m_steerEncoder.getAbsolutePosition().getValue().in(Radian),optimized.angle.getRadians()));
+        double steerOutput = m_steerPid.calculate(currentState.angle.getRadians(), optimized.angle.getRadians())
+                + m_steerFeedforward.calculate(optimized.angle.getRadians());
+        
+        m_steerMotor.set(steerOutput);
     }
 }
