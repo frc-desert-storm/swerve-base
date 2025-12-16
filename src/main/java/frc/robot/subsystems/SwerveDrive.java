@@ -2,10 +2,13 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
 
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.*;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -44,8 +47,6 @@ public class SwerveDrive extends SubsystemBase {
     public Pose2d m_pose = new Pose2d();
     public Field2d m_field = new Field2d();
 
-    public Vision m_vision = new Vision();
-
     public void drive(double forward, double strafe, double rotation, Boolean fieldRelative) {
         double forwardMetersPerSecond = forward * SwerveDriveConstants.kMaxSpeedMetersPerSecond;
         double strafeMetersPerSecond = strafe * SwerveDriveConstants.kMaxSpeedMetersPerSecond;
@@ -76,7 +77,6 @@ public class SwerveDrive extends SubsystemBase {
                 m_backRight.getPosition()
             }
         );
-        m_odometry.addVisionMeasurement(m_vision.getRobotPose().toPose2d(),m_vision.getLatestTimestamp());
         m_field.setRobotPose(m_pose);
         SmartDashboard.putData(m_field);
     }
@@ -100,5 +100,9 @@ public class SwerveDrive extends SubsystemBase {
         m_frontRight.setDesiredState(zero);
         m_backLeft.setDesiredState(zero);
         m_backRight.setDesiredState(zero);
+    }
+    
+    public void addVisionMeasurement(Pose2d pose, double timestamp, Matrix<N3, N1> estimationStdDevs) {
+        m_odometry.addVisionMeasurement(pose, timestamp,estimationStdDevs);
     }
 }
