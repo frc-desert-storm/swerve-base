@@ -12,6 +12,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.littletonrobotics.junction.Logger;
 
 public class SwerveDrive extends SubsystemBase {
 
@@ -79,6 +80,7 @@ public class SwerveDrive extends SubsystemBase {
         );
         m_field.setRobotPose(m_pose);
         SmartDashboard.putData(m_field);
+        Logger.recordOutput("2d_Position", m_pose);
     }
     
     public void xStance(){

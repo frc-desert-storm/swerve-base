@@ -11,6 +11,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -21,8 +22,8 @@ import java.util.Optional;
 
 
 public class Vision extends SubsystemBase {
-  private final Transform3d kLeftCameraPosition = new Transform3d(Units.inchesToMeters(-10.3), Units.inchesToMeters(11), Units.inchesToMeters(4.5), new Rotation3d(0.0, Units.degreesToRadians(-30), Units.degreesToRadians(20)));
-  private final Transform3d kRightCameraPosition = new Transform3d(Units.inchesToMeters(10.3), Units.inchesToMeters(11), Units.inchesToMeters(4.5), new Rotation3d(0.0, Units.degreesToRadians(-30), Units.degreesToRadians(-20)));
+  private final Transform3d kLeftCameraPosition = new Transform3d(Units.inchesToMeters(10.3), Units.inchesToMeters(11), Units.inchesToMeters(4.5), new Rotation3d(0.0, Units.degreesToRadians(-30), Units.degreesToRadians(-20)));
+  private final Transform3d kRightCameraPosition = new Transform3d(Units.inchesToMeters(10.3), Units.inchesToMeters(-11), Units.inchesToMeters(4.5), new Rotation3d(0.0, Units.degreesToRadians(-30), Units.degreesToRadians(20)));
   
   private final AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
   
@@ -30,7 +31,7 @@ public class Vision extends SubsystemBase {
   public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
   
   private final PhotonPoseEstimator m_LeftPhotonPoseEstimator = new PhotonPoseEstimator(kTagLayout, PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, kLeftCameraPosition);
-  private final PhotonPoseEstimator m_RightPhotonPoseEstimator = new PhotonPoseEstimator(kTagLayout, PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, kLeftCameraPosition);
+  private final PhotonPoseEstimator m_RightPhotonPoseEstimator = new PhotonPoseEstimator(kTagLayout, PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, kRightCameraPosition);
   
   private final Camera[] m_cameras = {
       new Camera(new PhotonCamera("LeftCamera"), m_LeftPhotonPoseEstimator, kLeftCameraPosition),
@@ -56,7 +57,7 @@ public class Vision extends SubsystemBase {
             est -> {
               // Change our trust in the measurement based on the tags we can see
               var estStdDevs = getEstimationStdDevs(visionEst, change.getTargets(), photonEstimator);
-              
+              Logger.recordOutput(camera.camera.getName(),est.estimatedPose);
               m_estimateConsumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
             });
       }
