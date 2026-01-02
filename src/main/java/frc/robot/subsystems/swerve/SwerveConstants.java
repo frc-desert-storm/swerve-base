@@ -1,13 +1,12 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.swerve;
 
 import com.ctre.phoenix6.CANBus;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 
-public class SwerveDriveConstants {
+public class SwerveConstants {
     // EVERYTHING IS METRIC
     public static final double kTrackWidth = Units.inchesToMeters(16.5);
     public static final double kWheelBase = Units.inchesToMeters(16.5);
@@ -63,24 +62,3 @@ public class SwerveDriveConstants {
         }
     }
 }
-/*            case "Front Left":
-                m_driveMotor = new TalonFX(11, "bob");
-                m_steerMotor = new TalonFX(12, "bob");
-                m_steerEncoder = new CANcoder(13, "bob");
-                break;
-            case "Front Right":
-                m_driveMotor = new TalonFX(14, "bob");
-                m_steerMotor = new TalonFX(15, "bob");
-                m_steerEncoder = new CANcoder(16, "bob");
-                break;
-            case "Back Left":
-                m_driveMotor = new TalonFX(18, "bob");
-                m_steerMotor = new TalonFX(17, "bob");
-                m_steerEncoder = new CANcoder(19, "bob");
-                break;
-            case "Back Right":
-                m_driveMotor = new TalonFX(21, "bob");
-                m_steerMotor = new TalonFX(20, "bob");
-                m_steerEncoder = new CANcoder(22, "bob");
-                break;
- */

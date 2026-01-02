@@ -1,9 +1,8 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.swerve;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -12,9 +11,9 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.units.Units;
 
 import static edu.wpi.first.units.Units.Radian;
-import static frc.robot.subsystems.SwerveDriveConstants.kCanBus;
+import static frc.robot.subsystems.swerve.SwerveConstants.kCanBus;
 
-public class SwerveDriveModule {
+public class Module {
     private final TalonFX m_driveMotor;
     private final TalonFX m_steerMotor;
 
@@ -26,7 +25,7 @@ public class SwerveDriveModule {
     private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0, 0, 0);
     private final PIDController m_drivePid = new PIDController(.05, 0, 0);
 
-    public SwerveDriveModule(SwerveDriveConstants.SwerveModuleConstants constants) {
+    public Module(SwerveConstants.SwerveModuleConstants constants) {
         m_driveMotor = new TalonFX(constants.DriveCanId, kCanBus);
         m_steerMotor = new TalonFX(constants.SteeringCanId, kCanBus);
         m_steerEncoder = new CANcoder(constants.EncoderCanId, kCanBus);
@@ -38,8 +37,8 @@ public class SwerveDriveModule {
     
     public SwerveModuleState getState(){
         double speedMetersPerSecond = m_driveMotor.getVelocity().getValue().in(Units.RotationsPerSecond)
-                * SwerveDriveConstants.kWheelCircumferenceMeters
-                / SwerveDriveConstants.kDriveGearRatio;
+                * SwerveConstants.kWheelCircumferenceMeters
+                / SwerveConstants.kDriveGearRatio;
 
         Rotation2d angle = getCurrentAngle();
 
@@ -48,8 +47,8 @@ public class SwerveDriveModule {
     
     public SwerveModulePosition getPosition(){
         double distanceMeters = m_driveMotor.getPosition().getValue().in(Units.Rotations)
-                * SwerveDriveConstants.kWheelCircumferenceMeters
-                / SwerveDriveConstants.kDriveGearRatio;
+                * SwerveConstants.kWheelCircumferenceMeters
+                / SwerveConstants.kDriveGearRatio;
 
         Rotation2d angle = getCurrentAngle();
 

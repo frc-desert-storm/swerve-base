@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.swerve;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
 
@@ -14,26 +14,26 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
-public class SwerveDrive extends SubsystemBase {
+public class Swerve extends SubsystemBase {
 
-    private final SwerveDriveKinematics m_swerveDriveKinematics = SwerveDriveConstants.kDriveKinematics;
+    private final SwerveDriveKinematics m_swerveDriveKinematics = SwerveConstants.kDriveKinematics;
 
-    private final Pigeon2 pigeon = new Pigeon2(10,SwerveDriveConstants.kCanBus);
+    private final Pigeon2 pigeon = new Pigeon2(10, SwerveConstants.kCanBus);
 
-    private final SwerveDriveModule m_frontLeft = new SwerveDriveModule(
-            SwerveDriveConstants.SwerveModuleConstants.FrontLeft
+    private final Module m_frontLeft = new Module(
+            SwerveConstants.SwerveModuleConstants.FrontLeft
     );
 
-    private final SwerveDriveModule m_frontRight = new SwerveDriveModule(
-            SwerveDriveConstants.SwerveModuleConstants.FrontRight
+    private final Module m_frontRight = new Module(
+            SwerveConstants.SwerveModuleConstants.FrontRight
     );
 
-    private final SwerveDriveModule m_backLeft = new SwerveDriveModule(
-            SwerveDriveConstants.SwerveModuleConstants.BackLeft
+    private final Module m_backLeft = new Module(
+            SwerveConstants.SwerveModuleConstants.BackLeft
     );
 
-    private final SwerveDriveModule m_backRight = new SwerveDriveModule(
-            SwerveDriveConstants.SwerveModuleConstants.BackRight
+    private final Module m_backRight = new Module(
+            SwerveConstants.SwerveModuleConstants.BackRight
     );
 
     private final SwerveDrivePoseEstimator m_odometry = new SwerveDrivePoseEstimator(
@@ -49,9 +49,9 @@ public class SwerveDrive extends SubsystemBase {
     public Field2d m_field = new Field2d();
 
     public void drive(double forward, double strafe, double rotation, Boolean fieldRelative) {
-        double forwardMetersPerSecond = forward * SwerveDriveConstants.kMaxSpeedMetersPerSecond;
-        double strafeMetersPerSecond = strafe * SwerveDriveConstants.kMaxSpeedMetersPerSecond;
-        double rotationsRadiansPerSecond = rotation * SwerveDriveConstants.kMaxAngularSpeedRadiansPerSecond;
+        double forwardMetersPerSecond = forward * SwerveConstants.kMaxSpeedMetersPerSecond;
+        double strafeMetersPerSecond = strafe * SwerveConstants.kMaxSpeedMetersPerSecond;
+        double rotationsRadiansPerSecond = rotation * SwerveConstants.kMaxAngularSpeedRadiansPerSecond;
         
         ChassisSpeeds chassisSpeeds = new ChassisSpeeds(forwardMetersPerSecond, strafeMetersPerSecond, rotationsRadiansPerSecond);
         if(fieldRelative) chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, pigeon.getRotation2d());

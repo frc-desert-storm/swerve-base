@@ -1,15 +1,13 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.SwerveDrive;
-
-import java.util.function.DoubleSupplier;
+import frc.robot.subsystems.swerve.Swerve;
 
 public class SwerveXCommand extends Command {
 
-    private final SwerveDrive m_swerveDrive;
+    private final Swerve m_swerveDrive;
 
-    public SwerveXCommand(SwerveDrive swerveDrive) {
+    public SwerveXCommand(Swerve swerveDrive) {
         m_swerveDrive = swerveDrive;
     }
 

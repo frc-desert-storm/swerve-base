@@ -12,8 +12,8 @@ import frc.robot.commands.SwerveZeroCommand;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.subsystems.SwerveDrive;
-import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.swerve.Swerve;
+import frc.robot.subsystems.vision.Vision;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -22,7 +22,7 @@ import frc.robot.subsystems.Vision;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  private final SwerveDrive m_drivetrain = new SwerveDrive();
+  private final Swerve m_drivetrain = new Swerve();
   private final Vision m_vision = new Vision(m_drivetrain::addVisionMeasurement);
   
   // Replace with CommandPS4Controller or CommandJoystick if needed
