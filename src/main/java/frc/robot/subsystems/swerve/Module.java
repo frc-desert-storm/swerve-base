@@ -9,70 +9,87 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.units.Units;
+import org.littletonrobotics.junction.Logger;
 
 import static edu.wpi.first.units.Units.Radian;
-import static frc.robot.subsystems.swerve.SwerveConstants.kCanBus;
+import static frc.robot.subsystems.swerve.SwerveConstants.*;
 
 public class Module {
-    private final TalonFX m_driveMotor;
-    private final TalonFX m_steerMotor;
-
-    private final CANcoder m_steerEncoder;
-
-    private final SimpleMotorFeedforward m_steerFeedforward = new SimpleMotorFeedforward(0, 0, 0);
-    private final PIDController m_steerPid = new PIDController(.3, 0, 0);
+    private final ModuleIO io;
+    private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
+    private final int index;
   
-    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0, 0, 0);
-    private final PIDController m_drivePid = new PIDController(.05, 0, 0);
+    private final SimpleMotorFeedforward steerFF = new SimpleMotorFeedforward(kSteerS, kSteerV, kSteerA);
+    private final PIDController steerPID = new PIDController(kSteerP, 0, kSteerD);
+  
+    private final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(kDriveS, kDriveV, kDriveA);
+    private final PIDController drivePID = new PIDController(kDriveP, 0, kDriveD);
+    
+    private Rotation2d angleSetpoint = null;
+    private Double speedSetpoint = null;
+    private SwerveModulePosition odometryPosition = new SwerveModulePosition();
+    
 
-    public Module(SwerveConstants.SwerveModuleConstants constants) {
-        m_driveMotor = new TalonFX(constants.DriveCanId, kCanBus);
-        m_steerMotor = new TalonFX(constants.SteeringCanId, kCanBus);
-        m_steerEncoder = new CANcoder(constants.EncoderCanId, kCanBus);
-    }
-
-    public Rotation2d getCurrentAngle(){
-        return Rotation2d.fromRadians(m_steerEncoder.getAbsolutePosition().getValue().in(Radian));
+    public Module(ModuleIO io, int index) {
+      this.io = io;
+      this.index = index;
+      
+      steerPID.enableContinuousInput(-Math.PI, Math.PI);
     }
     
-    public SwerveModuleState getState(){
-        double speedMetersPerSecond = m_driveMotor.getVelocity().getValue().in(Units.RotationsPerSecond)
-                * SwerveConstants.kWheelCircumferenceMeters
-                / SwerveConstants.kDriveGearRatio;
-
-        Rotation2d angle = getCurrentAngle();
-
-        return new SwerveModuleState(speedMetersPerSecond, angle);
+    public void periodic() {
+      io.updateInputs(inputs);
+      Logger.processInputs("Drive/Module" + index, inputs);
+      
+      if (angleSetpoint != null) {
+        io.setSteerVoltage(
+            steerPID.calculate(getAngle().getRadians(), angleSetpoint.getRadians()));
+        
+        if (speedSetpoint != null) {
+          // Drives slower when the wheel is away from the setpoint
+          double adjustSpeedSetpoint = speedSetpoint * Math.cos(steerPID.getError());
+          
+          // Run drive controller
+          double velocityRadPerSec = adjustSpeedSetpoint / kWheelRadiusMeters;
+          io.setDriveVoltage(
+              drivePID.calculate(velocityRadPerSec)
+                  + driveFF.calculateWithVelocities(inputs.driveVelocityRadPerSec, velocityRadPerSec));
+        }
+      }
+      
+      odometryPosition = new SwerveModulePosition(
+          inputs.drivePositionRad * kWheelRadiusMeters,
+          getAngle()
+      );
     }
     
-    public SwerveModulePosition getPosition(){
-        double distanceMeters = m_driveMotor.getPosition().getValue().in(Units.Rotations)
-                * SwerveConstants.kWheelCircumferenceMeters
-                / SwerveConstants.kDriveGearRatio;
-
-        Rotation2d angle = getCurrentAngle();
-
-        return new SwerveModulePosition(distanceMeters, angle);
+    public void runSetpoint(SwerveModuleState state){
+      state.optimize(getAngle());
+      
+      angleSetpoint = state.angle;
+      speedSetpoint = state.speedMetersPerSecond;
     }
-
-    public void setDesiredState(SwerveModuleState desiredState){
-        SwerveModuleState optimized = new SwerveModuleState(
-                desiredState.speedMetersPerSecond,
-                desiredState.angle
-        );
-        
-        SwerveModuleState currentState = getState();
-
-        optimized.optimize(currentState.angle);
-        
-        double driveOutput = m_drivePid.calculate(currentState.speedMetersPerSecond, optimized.speedMetersPerSecond)
-                + m_driveFeedforward.calculate(optimized.speedMetersPerSecond);
-
-        m_driveMotor.set(driveOutput);
-        
-        double steerOutput = m_steerPid.calculate(currentState.angle.getRadians(), optimized.angle.getRadians())
-                + m_steerFeedforward.calculate(optimized.angle.getRadians());
-        
-        m_steerMotor.set(steerOutput);
+  
+    public void stop() {
+      io.setSteerVoltage(0.0);
+      io.setDriveVoltage(0.0);
+      
+      angleSetpoint = null;
+      speedSetpoint = null;
+    }
+    
+    public Rotation2d getAngle() {
+      return inputs.steerPosition;
+    }
+    
+    public SwerveModulePosition getPosition() {
+      return odometryPosition;
+    }
+    
+    public SwerveModuleState getState() {
+      return new SwerveModuleState(
+          inputs.driveVelocityRadPerSec * kWheelRadiusMeters,
+          getAngle()
+      );
     }
 }

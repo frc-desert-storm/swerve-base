@@ -12,7 +12,12 @@ import frc.robot.commands.SwerveZeroCommand;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.subsystems.swerve.ModuleIO;
+import frc.robot.subsystems.swerve.ModuleIOTalonFX;
 import frc.robot.subsystems.swerve.Swerve;
+import frc.robot.subsystems.swerve.SwerveConstants;
+import frc.robot.subsystems.swerve.gyro.GyroIO;
+import frc.robot.subsystems.swerve.gyro.GyroIOPigeon2;
 import frc.robot.subsystems.vision.Vision;
 
 /**
@@ -22,8 +27,8 @@ import frc.robot.subsystems.vision.Vision;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  private final Swerve m_drivetrain = new Swerve();
-  private final Vision m_vision = new Vision(m_drivetrain::addVisionMeasurement);
+  private final Swerve m_drivetrain;
+  private final Vision m_vision;
   
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -31,7 +36,24 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    // Configure the trigger bindings
+    if(Robot.isReal()){
+      m_drivetrain =
+          new Swerve(
+              new GyroIOPigeon2(),
+              new ModuleIOTalonFX(SwerveConstants.ModuleConfig.FrontLeft),
+              new ModuleIOTalonFX(SwerveConstants.ModuleConfig.FrontRight),
+              new ModuleIOTalonFX(SwerveConstants.ModuleConfig.BackLeft),
+              new ModuleIOTalonFX(SwerveConstants.ModuleConfig.BackRight));
+    }else {
+      m_drivetrain =
+          new Swerve(
+              new GyroIO() {},
+              new ModuleIO() {},
+              new ModuleIO() {},
+              new ModuleIO() {},
+              new ModuleIO() {}); // TODO add sim modules
+    }
+    m_vision = new Vision(m_drivetrain::addVisionMeasurement);
     configureBindings();
   }
 
