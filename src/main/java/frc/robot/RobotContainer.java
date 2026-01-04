@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.SwerveDrive;
+import frc.robot.subsystems.Vision;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -22,7 +23,8 @@ import frc.robot.subsystems.SwerveDrive;
  */
 public class RobotContainer {
   private final SwerveDrive m_drivetrain = new SwerveDrive();
-
+  private final Vision m_vision = new Vision(m_drivetrain::addVisionMeasurement);
+  
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
@@ -49,8 +51,8 @@ public class RobotContainer {
             () -> MathUtil.applyDeadband(m_driverController.getLeftX() * 0.5,0.1),
             () -> MathUtil.applyDeadband(m_driverController.getRightX() * 0.5,0.1)
     ));
-  m_driverController.x().onTrue(new SwerveXCommand(m_drivetrain));
-  m_driverController.b().onTrue(new SwerveZeroCommand(m_drivetrain));
+    m_driverController.x().onTrue(new SwerveXCommand(m_drivetrain));
+    m_driverController.b().onTrue(new SwerveZeroCommand(m_drivetrain));
   }
 
 
