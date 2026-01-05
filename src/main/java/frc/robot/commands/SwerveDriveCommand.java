@@ -2,16 +2,16 @@ package frc.robot.commands;
 
 import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.SwerveDrive;
+import frc.robot.subsystems.swerve.Swerve;
 
 public class SwerveDriveCommand extends Command {
 
-    private final SwerveDrive m_swerveDrive;
+    private final Swerve m_swerveDrive;
     private final DoubleSupplier m_forward;
     private final DoubleSupplier m_strafe;
     private final DoubleSupplier m_rotation;
 
-    public SwerveDriveCommand(SwerveDrive swerveDrive, DoubleSupplier forward, DoubleSupplier strafe, DoubleSupplier rotation) {
+    public SwerveDriveCommand(Swerve swerveDrive, DoubleSupplier forward, DoubleSupplier strafe, DoubleSupplier rotation) {
         m_swerveDrive = swerveDrive;
         m_forward = forward;
         m_strafe = strafe;
